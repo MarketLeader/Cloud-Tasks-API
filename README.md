@@ -1,150 +1,93 @@
-# captainhook
+<p align="center"> 
+<a href="https://chetabahana.com/">
+<img src="https://chetabahana.files.wordpress.com/2018/04/logoweb.png" alt="Chetabahana.com | Situs Belanja Jual-Beli Barang & Promo Aneka Produk Fashion, Busana Muslim, Bayi & Anak-anak, Kecantikan, Tas, Sepatu, Peralatan Rumah Tangga, Elektronik, Makanan & Minuman Kemasan, dll. Soon The E-Shop Market Leader Will Be Owned Here!"></a><br />
+<a href="https://github.com/MarketLeader">  
+WE ARE GOING TO WIN THE MARKET!
+</a><br /><br />
+</p>
 
-[![Build Status](https://drone.gopheracademy.com/api/badges/bketelsen/captainhook/status.svg)](https://drone.gopheracademy.com/bketelsen/captainhook)
 
-A generic webhook endpoint that runs scripts based on the URL called
+# Cloud Tasks API
+:hand: Selamat datang di [Halaman Project](https://github.com/MarketLeader) untuk sesi [**Cloud Tasks API**](https://github.com/MarketLeader/Cloud-Tasks-API).
 
-This tool was built as part of a CI orchestration process, to be called when
-Docker trusted builds finish.  It explicitly ignores the posted data from the webhook
-because that would be `insecure`, which is `bad`. 
+Sesi ini adalah sesi kedua publikasi [**Tim Chetabahana**](https://github.com/chetabahana) dari sesi utama yaitu: [_Toko-Chetabahana_](https://github.com/MarketLeader/Toko-Chetabahana) kelanjutan sesi pertama yaitu [ Cloud-Site-API ](https://github.com/MarketLeader/Cloud-Site-API) sebelum menginjak sesi ketiga yaitu [ Google-Ads-API ](https://github.com/MarketLeader/Google-Ads-API).
 
-## Shoulders of Giants
+Di sesi ini kami akan publikasikan cara untuk memasukkan produk unggulan dari [Toko Online Chetabahana](https://chetabahana.com/) ke [Google Merchant](https://www.google.com/retail/solutions/merchant-center/) sehingga [_tersimpan menjadi database_](https://support.google.com/merchants/answer/7052112) via [Cloud Tasks API](https://developers.google.com/shopping-content/v2/quickstart).
 
-Captainhook would not be possible if not for all of the great projects it depends on. Please see [SHOULDERS.md](SHOULDERS.md) to see a list of them.
+## Pilosopi
+Pilosofi utamanya adalah optimasi produk secara eksternal:
+- Penautan ke halaman produk
+- Kanonikalisasi, No Follow
+- Akurasi judul yg unik dan akurat
+- Ringkasan situs, Artikel,
+- Rating sosial media
 
-## Quick Start
+## Manfaat
+- Meningkatkan peluang penelusuran
+- Mengoptimalkan biaya iklan
+- Efisiensi sales return
+- Kemandirian strategi
+- Kesinambungan
 
-### Install captainhook
+## Proses
+Proses diatur dengan alur sbb:
+- Proses ke-1: Proses ahir data.
+- Proses ke-2: Proses akses akun. 
+- Proses ke-3: Proses kelola atribut.
+- Proses ke-4: Proses simpan atribut.
+<p align="center"> 
+<a href="https://chetabahana.com/product?l=60&o=produk&group=406"><img src="https://user-images.githubusercontent.com/36441664/39134523-0442bbea-4741-11e8-8727-f51e473f4544.png" alt="Tampilan Database aneka produk makanan dari Toko Chetabahana di Google Merchant untuk kompetisi Tayang Iklan Belanja"></a>Gambar-1: Contoh tampilan Database <a href="https://chetabahana.com/product?l=60&o=produk&group=406">aneka produk makanan dari Toko Chetabahana.com</a> di Google Merchant
+</p>
 
-`go get github.com/bketelsen/captainhook`
-
-### Create the `configdir`
-
+## Struktur
+Struktur dari alur dijalankan dengan [_asas terbalik_](https://en.wikipedia.org/wiki/Algorithm) sbb:
 ```
-mkdir ~/captainhook
+Proses ke-4: Proses simpan atribut (Top_dir)
+|-----README.md (yg sedang ada baca)
+|-----Proses ke-3: Proses kelola atribut
+      |----README.md
+      |----Proses ke-2: Proses akses akun
+           |----README.md
+      |----Proses ke-1: Proses ahir data
+           |----README.md
 ```
+- [Proses ke-1](https://github.com/MarketLeader/Cloud-Site-API#Cloud-Site-API): Mulai dari akses ke daftar produk, menyaring data sampai sunting untuk tampilkan produk.
+- [Proses ke-2](https://github.com/MarketLeader/Cloud-Tasks-API#Cloud-Tasks-API): Mulai dari akses ke saran produk, memilah barang sampai input menjadi database produk.
+- [Proses ke-3](https://github.com/MarketLeader/Google-Ads-API#google-Ads-API): Mulai dari [akses ke database produk](https://youtu.be/yojJ2-7TZEg), [kinerja penjualan](https://youtu.be/L6ntPCO0Uok) sampai [optimasi setelan promosi](https://youtu.be/O9P_QK5BZT8).
+- [Proses ke-4](#proses): Mengatur konfigurasi, penjadwalan, lalu-lintas data, dan analisa hasil dari semua proses.
 
-### Add a script 
+## Repositori
+Penempatan Repositori (Repo) untuk setiap proses diatur sbb:
+- Repo Proses ke-1: [MarketLeader/Cloud-Site-API](https://github.com/MarketLeader/Cloud-Site-API). Dokumentasinya [_disini_](https://github.com/MarketLeader/Cloud-Site-API/wiki)
+- Repo Proses ke-2: [MarketLeader/Cloud-Tasks-API](https://github.com/MarketLeader/Cloud-Tasks-API). Dokumentasinya [_disini_](https://github.com/MarketLeader/Cloud-Tasks-API/wiki)
+- Repo Proses ke-3: [MarketLeader/Google-Ads-API](https://github.com/MarketLeader/Google-Ads-API). Dokumentasinya [_disini_](https://github.com/MarketLeader/Google-Ads-API/wiki)
+- Repo Proses ke-4: [MarketLeader/Toko-Chetabahana](https://github.com/MarketLeader/Toko-Chetabahana) (ini). Dokumentasinya [_disini_](https://github.com/MarketLeader/Toko-Chetabahana/wiki)
 
-```
-{
-    "scripts": [
-        {
-            "command": "ls",
-            "args": [
-                "-l",
-                "-a"
-            ]
-        },
-        {
-            "command": "echo",
-            "args": [
-		    "hello"
-		    ]
-        }
-    ]
-}
-```
-Name this script `endpoint1.json`
+## License
+Project ini dipublikasikan dengan lisensi berikut:  
+[Apache License 2.0](https://github.com/MarketLeader/Toko-Chetabahana/blob/master/LICENSE)
 
-### Start the service
+## Pustaka
+<p align="center"> 
+<a href="https://chetabahana.com/#after_header1_3"><img src="https://user-images.githubusercontent.com/36441664/38942532-44c87736-4359-11e8-9ad4-56f7d2b68ced.png" alt="Alokasi Pustaka Online Chetabahana"></a>Gambar-2: Alokasi Pustaka Online <a href=https://chetabahana.com>Chetabahana</a>
+</p>
 
-```
-captainhook -configdir ~/captainhook
-```
+Disarankan untuk disimak sebelum melangkah lebih jauh:  
+- [Cara Buka Toko Online WinMarket dan Optimasi Internal](https://chetabahana.blogspot.com/)
+- [Cara Optimasi Eksternal Toko dengan Shop SEO](https://chetabahana.wordpress.com/)
+- [Channel Youtube Chetabahana](https://www.youtube.com/channel/UCZlPku9beXzdROCknYLuRNg?view_as=subscriber)
+- [e-Books Chetabahana](https://www.scribd.com/user/401259110/Chetabahana)
 
-### Test using curl
+## Penutup
+Berikut ini beberapa catatan sebagai penutup:  
+- Projek ini diprioriostaskan bagi peminat [e-Commerce di Indonesia](https://www.youtube.com/watch?v=dd__L8Jh2c4&t=25s) 🇮🇩
+- Status masih pengembangan dan pengetesan implementasi
+- Syarat untuk bergabung silahkan [Daftar ID Chetabahana](https://www.chetabahana.com/layanan/mendaftarkan-produk.html)
+- Ingin [berdonasi](https://notepad-plus-plus.org/donate/donate-action.html)? welcome untuk bergabung.
 
-```
-curl -X POST http://localhost:8080/endpoint1
-```
+Terimakasih atas kunjungannya.  
+Met menyimak.. :pray:  
 
-### Configure calling webhooks
-Each script you create in the `configdir` will be executed when
-the corresponding endpoint is called. 
-
-If you have a script called `deployBigApp.json` you would trigger
-it by posting to http://your.captainhook.url/deployBigApp.
-
-The scripts in the json file are executed sequentially, and the output is logged
-and returned to the caller in the response, which always has an HTTP status code
-of 200 (OK) even if your scripts didn't work.  This is intentional, to avoid causing
-errors in external services like Docker or Github, which might not like you returning
-statuses other than 200 (OK).
-
-### Accessing the Request POST Body 
-You'll sometimes need to access the POST data of the request for information such as a callback URL. 
-You can pass the raw POST data to a script by adding {{POST}} to the script arguments.
-
-```json
-{
-    "scripts": [
-        {
-            "command": "echo",
-            "args": [
-            "{{POST}}"
-            ]
-        }
-    ]
-}
-``` 
-
-### Limiting access for webhooks
-You can limit who can call your webhooks by specifying "allowedNetworks" in the json config.
-
-```json
-{
-    "scripts": [
-        {
-            "command": "echo"
-        }
-    ],
-    "allowedNetworks": [
-        "10.0.0.0/8",
-        "127.0.0.1/32"
-    ]
-}
-```
-This would allow your hook to be called from the 10.0.0.0/8 network, or from localhost.
-
-### Supporting proxy headers for client IP
-
-Only enable proxy support if you are on a trusted network behind a reverse proxy. End-users with direct network access can subvert the allowedNetworks restriction if proxy support is on.
-```
-captainhook -configdir ~/captainhook -enable-proxy -proxy-header X-Forwarded-For
-```
-
-## Docker
-```
-docker pull bketelsen/captainhook
-mkdir /some/local/config
-$EDITOR /some/local/config/myhook.json
-docker run -d -v /some/local/config:/config bketelsen/captainhook
-```
-
-## Install
-
-captainhook requires Go 1.10 to build locally with 'vgo' support.
-
-`go get github.com/bketelsen/captainhook`
-
-## Build
-
-Download
-
-```
-mkdir -p $GOPATH/src/github.com/bketelsen
-cd $GOPATH/src/github.com/bketelsen
-git clone git@github.com:bketelsen/captainhook.git
-```
-
-```
-go build .
-```
-## To Do
-
-- more logs
-
-
-Copyright 2014, Brian Ketelsen and Kelsey Hightower
-LICENSE information found in LICENSE file.
+SALAM Sukses!  
+:copyright: [**Chetabahana Project**](https://github.com/MarketLeader)  
+[![profile for Chetabahana on Stack Exchange, a network of free, community-driven Q&amp;A sites](https://stackexchange.com/users/flair/5054985.png)](https://stackoverflow.com/users/4058484/chetabahana?tab=profile)   

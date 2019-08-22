@@ -1,0 +1,5 @@
+encoding: utf-8
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-coffeescrip
