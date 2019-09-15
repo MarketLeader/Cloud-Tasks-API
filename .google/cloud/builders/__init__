@@ -1,88 +1,112 @@
 #!/bin/bash
 
-# Unmark the 2 line below to see all commands available
-#echo -e "\n$hr\nPATH COMMANDS\n$hr"
-#compgen -c | xargs which -a | sort && dpkg -l
-
-# Dependencies
-source .google/list_files
-
-# Adjust column numbers ('180') follow to your screen
-printf -v res %180s
-export hr=`printf '%s\n' "${res// /_}"`
-export hrd=`printf '%s\n' "${res// /=}"`
+# Parameters
+while [[ "$1" != "" ]]; do
+    eval export "$1" &> /dev/null
+    shift
+done
 
 # Environtment
-export WORKSPACE=$(realpath .)
-export PATH=$HOME/.local/bin:$PATH
-export OUTPUTS_VOLUME=/builder/outputs/volume
-[[ ! -d $OUTPUTS_VOLUME ]] && mkdir -p $OUTPUTS_VOLUME
-  
-# Check active gcloud
-if [[ "${TAG_NAME}" == "gcloud" ]]
-then
-    # Set Google App Credentials
-    if [[ -z $(gcloud config get-value account 2> /dev/null) ]]
+get_workspace()
+{
+    echo Set Environtments..
+    export NAMESPACE=$(realpath ${0%/*})
+
+    # Namespace Environtments
+    INHERIT=$(dirname ${NAMESPACE})/__init__ 
+    if [[ -f $INHERIT ]]; then source $INHERIT; fi
+
+    # Workspace Environtments
+    if [[ -f $WORKSPACE/env_vars_to_export ]]
     then
-        # Dependencies: GCP_ACCOUNT & GCP_SA_KEY
-        if [[ -z $GOOGLE_APPLICATION_CREDENTIALS ]]
+        while read -r LINE; do
+            EXPORT=$(sed -e 's/[[:space:]]*$//' <<<${LINE})
+            VAR=`echo $EXPORT | cut -d '=' -f1`; ENV_VAR=$(echo $VAR)
+            if [[ -n ${ENV_VAR+set} ]]; then continue;
+            else eval export "$EXPORT" &> /dev/null; fi
+        done <$WORKSPACE/env_vars_to_export
+    fi
+}
+
+# Get private repository
+get_repository()
+{
+    # Set the workflows
+    echo Initializing Workflows..
+
+    # Set Google App Credentials
+    if [[ -x "$(command -v gcloud)" ]]
+    then
+        if [[ -z $(gcloud config get-value account 2> /dev/null) ]]
         then
-            echo $GCP_SA_KEY > .google-app-creds.json && KEY_FILE=$(realpath .google-app-creds.json)
-    	    gcloud auth activate-service-account $GCP_ACCOUNT --key-file=$KEY_FILE --project=$PROJECT_ID
-    	fi
+            # Dependencies: GCP_ACCOUNT & GCP_SA_KEY
+            if [[ -z $GOOGLE_APPLICATION_CREDENTIALS ]]
+            then
+                echo $GCP_SA_KEY > .google-app-creds.json
+                export GOOGLE_APPLICATION_CREDENTIALS=$(realpath .google-app-creds.json)
+            fi
+
+            # Activate account
+            gcloud config set project $PROJECT_ID &> /dev/null
+            gcloud auth activate-service-account $GCP_ACCOUNT --project=$PROJECT_ID \
+            --key-file=$GOOGLE_APPLICATION_CREDENTIALS &> /dev/null
+        fi
     fi
 
-    # Private repository
-    if [[ ! -f $HOME/.ssh ]]
+    if [[ ! -d $WORKSPACE/.io ]]
     then
-        # Dependencies: Set 'mirror configuration' to Google Repository
-        # Name the repo to be on top of the list and Set IAM role to clone it
-        gcloud source repos clone --verbosity=none $(gcloud source repos list --limit=1 --format 'value(REPO_NAME)') .io &> /dev/null
-        if [[ "$BRANCH_NAME" != "master" ]]
+        if [[ -x "$(command -v gcloud)" ]]
         then
-            cd .io
-            if grep -q origin/$BRANCH_NAME << EOF
+            # Dependencies: Set the repository in to Google Repository
+            # Name the target repo to be on top of the list and Set IAM role to clone it
+            export REPOSITORY=$(gcloud source repos list --limit=1 --format 'value(REPO_NAME)')
+            gcloud source repos clone --verbosity=none $REPOSITORY $WORKSPACE/.io &> /dev/null
+        fi
+    fi
+
+    # Send to environtment
+    [[ -d $WORKSPACE/.io ]] && cd $WORKSPACE/.io || exit 0;
+    [[ -z $REPOSITORY ]] && export REPOSITORY=$(git remote get-url origin)
+    export MATCH_REPOSITORY=${REPOSITORY##*_} RUNNER=$HOME/.local/bin/run
+
+    # Locate the branch
+    if [[ "$BRANCH_NAME" != "master" ]]
+    then
+        if grep -q origin/$BRANCH_NAME << EOF
 `git branch -r`
 EOF
-            then
-                git checkout $BRANCH_NAME
-            fi
-            cd ..
+        then
+            git checkout $BRANCH_NAME
         fi
-        
-        # Get credential files
-        find .io -type d -name $PROJECT_ID -exec cp -frpT {} $HOME \;
-        rm -f .cp && find $HOME -type d -name $REPO_NAME | while read dir; do greb_files $dir; done
-
-        # Set credential files
-        for i in $HOME/.ssh/*.enc
-        do
-            # Decrypt credential files
-            # Dependencies: Put name of keys same as encrypted files
-            if [[ ! -f ${i%.*} ]]  
-            then
-                gcloud kms decrypt --location global --keyring my-keyring --key $(basename ${i%.*}) \
-                --ciphertext-file $i --plaintext-file ${i%.*}
-            fi
-            # Put environtment
-            # Dependencies: Put the name of file as env_keys
-            if [[ "$(basename ${i%.*})" == "env_keys" ]]  
-            then
-                echo WORKSPACE=$WORKSPACE >> ${i%.*}
-                echo OUTPUTS_VOLUME=$OUTPUTS_VOLUME >> ${i%.*}
-                [[ -n "${KEY_FILE+set}" ]] && echo GOOGLE_APPLICATION_CREDENTIALS=$KEY_FILE >> ${i%.*}
-                # Google Compute Instance
-                if [[ -n $(gcloud compute instances list --limit=1 --format 'value(name)') ]]
-                then
-                    ZONE=`gcloud compute instances list --limit=1 --format 'value(zone)' --filter="status=('RUNNING')"`
-                    NAME=`gcloud compute instances list --limit=1 --format 'value(name)' --filter="status=('RUNNING')"`
-                    echo "INSTANCE_ZONE=$ZONE" >> ${i%.*} && echo "INSTANCE_NAME=$NAME" >> ${i%.*}
-                fi
-            fi
-            chmod 600 ${i%.*}
-        done	
     fi
-fi
+
+    # Locate the files
+    if [[ ! -f $RUNNER ]]
+    then
+        for i in $(ls -d */)
+        do
+            mkdir -p $HOME/.local/$(basename ${i%%/})
+            cp -frpT ${i%%/} $HOME/.local/$(basename ${i%%/})
+        done
+    fi
+}
 
 # Run the current step
-read_files ${0%/*}/$TAG_NAME
+while [[ -z $ORIGIN ]]
+do
+    # Loop for environtments
+    [[ $ENV == true ]] && printenv | sort
+    if [[ -z $WORKSPACE ]]; then get_workspace; 
+    elif [[ -z $MATCH_REPOSITORY ]]; then get_repository;
+    elif [[ $(command -v run) == $RUNNER ]]; then run $TAG_NAME; 
+    elif [[ $(command -v push) == $PUSHER ]]; then push $TAG_NAME; 
+    else echo "uncathed profiles and settings.."; fi
+
+    # Avoid unwanted iteration
+    [[ -z $num ]] && num=0 || (( num += 1 ))
+    if [[ $num > 1 ]]
+    then
+        [[ ! -d $HOME/.ssh ]] && echo "step was failed, halted to continue.."
+        exit 0;
+    fi
+done
